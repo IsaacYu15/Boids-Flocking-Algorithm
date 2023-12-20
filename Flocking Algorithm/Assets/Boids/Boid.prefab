@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6107003828012624128}
   - component: {fileID: 6107003828012624159}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: triangle-outline-xxl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 6107003829245938392}
   - component: {fileID: 6107003829245938393}
   - component: {fileID: 6107003829245938394}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Boid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,9 +195,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f96f98c7d92f693469d91139f73cb27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  subjectOfStudy: 0
   boundaries:
     serializedVersion: 2
     m_Bits: 64
+  boids:
+    serializedVersion: 2
+    m_Bits: 128
   bounds: 20
   speed: 0.1
   colors:
