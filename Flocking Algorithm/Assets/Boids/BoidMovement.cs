@@ -4,22 +4,25 @@ using UnityEngine;
 
 public class BoidMovement : MonoBehaviour
 {
-    public bool subjectOfStudy;
+    public SpawnBoids BoidManager;
+    public LayerMask BoundsLayer;
 
-    public LayerMask boundaries;
-    public LayerMask boids;
+    public float Bounds;
+    public float Speed = 0.5f;
+    Vector3 Heading;
 
-    public float bounds;
-    public float speed = 0.5f;
-    Vector3 velocity;
+    public float MaxFOV;
+    public float MaxNeighbouringDistance;
+    public float AvoidingWeight;
+    public float AligningWeight;
 
     public Color[] colors;
 
     void Start()
     {
         //set random velocity
-        velocity = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f));
-        velocity = velocity.normalized;
+        Heading = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f));
+        Heading = Heading.normalized;
 
         //set random colour 
         SpriteRenderer renderer = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
@@ -29,44 +32,96 @@ public class BoidMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.rotation = Quaternion.LookRotation(velocity);
-        transform.position = transform.position + transform.forward * speed;
+        Heading = CalculateNewHeading();
+        transform.rotation = Quaternion.LookRotation(Heading);
+        transform.position += transform.forward * Speed * Time.deltaTime;
 
-        if (Mathf.Abs(transform.position.x) > bounds || Mathf.Abs(transform.position.z) > bounds )
+        if (Mathf.Abs(transform.position.x) > Bounds || Mathf.Abs(transform.position.z) > Bounds)
         {
-            respawnBoid();
-        }
-
-        avoidCollisions();
-    }
-
-    void respawnBoid ()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, -velocity, out hit, Mathf.Infinity, boundaries))
-        {
-            transform.position = hit.transform.position;
+            RespawnBoid();
         }
 
     }
 
-    //NEEDS WORK
-    void avoidCollisions ()
+    List<GameObject> GetNeighbours(float DistanceWeight)
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 5);
-        foreach(var hitCollider in hitColliders)
+        //allocation of memory and deallocation is quite inefficient
+        List<GameObject> Neighbours = new List<GameObject>();
+
+        foreach (GameObject Boid in BoidManager.BoidsList)
         {
-            if (hitCollider.transform.gameObject.layer == Mathf.RoundToInt(Mathf.Log(boids.value,2))
-                && hitCollider.transform.gameObject != this.gameObject)
+            if (BoidInFOV(Boid.transform.position, MaxFOV) && BoidInRange(Boid.transform.position, MaxNeighbouringDistance) && Boid != this.gameObject)
             {
-                float angle = Vector3.Angle(transform.forward, hitCollider.gameObject.transform.position - transform.position);
-                if (Mathf.Abs(angle) < 120)
-                {
-                    //Debug.DrawLine(hitCollider.transform.position, transform.position, Color.black);
-                    velocity = (velocity - hitCollider.gameObject.GetComponent<BoidMovement>().velocity).normalized;
-                }
-
+                Neighbours.Add(Boid);
             }
         }
+
+        return Neighbours;
     }
+
+    bool BoidInFOV(Vector3 OtherBoid, float Threshold)
+    {
+        return Vector3.Angle(transform.forward, OtherBoid - transform.position) <= Threshold;
+    }
+
+    bool BoidInRange(Vector3 OtherBoid, float Threshold)
+    {
+        return Vector3.Distance(transform.position, OtherBoid) <= Threshold;
+    }
+
+    Vector3 CalculateNewHeading()
+    {
+        Vector3 NewHeading = transform.forward;
+        NewHeading += AvoidingVector(GetNeighbours(5f))  * AvoidingWeight;
+        NewHeading += AlignmentVector(GetNeighbours(7f)) * AligningWeight;
+
+        return NewHeading.normalized;
+    }
+
+    Vector3 AvoidingVector (List<GameObject> Neighbours)
+    {
+        if (Neighbours.Count == 0 )
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 AvoidanceVector = transform.forward;
+
+        foreach(GameObject Boid in Neighbours)
+        {
+            AvoidanceVector += (transform.position - Boid.transform.position);
+        }
+        AvoidanceVector /= Neighbours.Count;
+        return AvoidanceVector.normalized;
+    }
+
+    Vector3 AlignmentVector(List<GameObject> Neighbours)
+    {
+        if (Neighbours.Count == 0)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 AligningVector = transform.forward;
+
+        foreach (GameObject Boid in Neighbours)
+        {
+            AligningVector += Boid.transform.position;
+        }
+        AligningVector /= Neighbours.Count;
+        return AligningVector.normalized;
+    }
+
+    void RespawnBoid()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -transform.forward, out hit, Mathf.Infinity, BoundsLayer))
+        {
+            transform.position -= transform.forward * (hit.distance - 1f);
+        }
+
+    }
+
+
+
 }

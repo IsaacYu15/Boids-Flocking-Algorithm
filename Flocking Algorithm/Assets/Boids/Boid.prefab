@@ -195,15 +195,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f96f98c7d92f693469d91139f73cb27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subjectOfStudy: 0
-  boundaries:
+  BoidManager: {fileID: 0}
+  BoundsLayer:
     serializedVersion: 2
     m_Bits: 64
-  boids:
-    serializedVersion: 2
-    m_Bits: 128
-  bounds: 20
-  speed: 0.1
+  Bounds: 0
+  Speed: 2
+  MaxFOV: 270
+  MaxNeighbouringDistance: 0.75
+  AvoidingWeight: 1
+  AligningWeight: 0.5
   colors:
   - {r: 0.40251565, g: 0.62204885, b: 1, a: 1}
   - {r: 0, g: 0.15640518, b: 0.4245283, a: 1}
