@@ -18,6 +18,7 @@ public class BoidMovement : MonoBehaviour
     public float AvoidingWeight;
     public float AligningWeight;
     public float CohesionWeight;
+    public float TurningWeight;
 
     void Start()
     {
@@ -35,16 +36,10 @@ public class BoidMovement : MonoBehaviour
     void Update()
     {
         Heading = CalculateNewHeading();
-
         Quaternion NewRotation = Quaternion.LookRotation(Heading);
         transform.rotation = Quaternion.Lerp(transform.rotation, NewRotation, Time.deltaTime * 5);
 
         transform.position += transform.forward * Speed * Time.deltaTime;
-
-        if (Mathf.Abs(transform.position.x) > Bounds || Mathf.Abs(transform.position.z) > Bounds)
-        {
-            RespawnBoid();
-        }
 
     }
 
@@ -81,7 +76,8 @@ public class BoidMovement : MonoBehaviour
         Vector3 NewHeading = Vector3.zero;
         NewHeading += AvoidingVector(GetNeighbours(5f))  * AvoidingWeight;
         NewHeading += AlignmentVector(GetNeighbours(10f)) * AligningWeight;
-        NewHeading += CohesionVector(GetNeighbours(20f)) * CohesionWeight;
+        NewHeading += CohesionVector(GetNeighbours(10f)) * CohesionWeight;
+
         return NewHeading.normalized;
     }
 
@@ -139,15 +135,6 @@ public class BoidMovement : MonoBehaviour
         return (AveragePosition - transform.position).normalized;
     }
 
-    void RespawnBoid()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, -transform.forward, out hit, Mathf.Infinity, BoundsLayer))
-        {
-            transform.position -= transform.forward * (hit.distance - 1f);
-        }
-
-    }
 
 
 

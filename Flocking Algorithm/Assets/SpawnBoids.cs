@@ -12,6 +12,7 @@ public class SpawnBoids : MonoBehaviour
     public float AvoidingWeight;
     public float AligningWeight;
     public float CohesionWeight;
+    public float TurningWeight;
 
     // Start is called before the first frame update
     void Start()
