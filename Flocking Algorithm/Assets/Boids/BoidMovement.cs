@@ -12,11 +12,12 @@ public class BoidMovement : MonoBehaviour
     Vector3 Heading;
 
     public float MaxFOV;
-    public float MaxNeighbouringDistance;
-    public float AvoidingWeight;
-    public float AligningWeight;
 
     public Color[] colors;
+
+    public float AvoidingWeight;
+    public float AligningWeight;
+    public float CohesionWeight;
 
     void Start()
     {
@@ -29,11 +30,15 @@ public class BoidMovement : MonoBehaviour
         renderer.color = colors[Random.Range(0, colors.Length)];
     }
 
+    Quaternion PrevRotation;
     // Update is called once per frame
     void Update()
     {
         Heading = CalculateNewHeading();
-        transform.rotation = Quaternion.LookRotation(Heading);
+
+        Quaternion NewRotation = Quaternion.LookRotation(Heading);
+        transform.rotation = Quaternion.Lerp(transform.rotation, NewRotation, Time.deltaTime * 5);
+
         transform.position += transform.forward * Speed * Time.deltaTime;
 
         if (Mathf.Abs(transform.position.x) > Bounds || Mathf.Abs(transform.position.z) > Bounds)
@@ -50,7 +55,9 @@ public class BoidMovement : MonoBehaviour
 
         foreach (GameObject Boid in BoidManager.BoidsList)
         {
-            if (BoidInFOV(Boid.transform.position, MaxFOV) && BoidInRange(Boid.transform.position, MaxNeighbouringDistance) && Boid != this.gameObject)
+            if (BoidInFOV(Boid.transform.position, MaxFOV) && 
+                BoidInRange(Boid.transform.position, DistanceWeight) && 
+                Boid != this.gameObject)
             {
                 Neighbours.Add(Boid);
             }
@@ -71,10 +78,10 @@ public class BoidMovement : MonoBehaviour
 
     Vector3 CalculateNewHeading()
     {
-        Vector3 NewHeading = transform.forward;
+        Vector3 NewHeading = Vector3.zero;
         NewHeading += AvoidingVector(GetNeighbours(5f))  * AvoidingWeight;
-        NewHeading += AlignmentVector(GetNeighbours(7f)) * AligningWeight;
-
+        NewHeading += AlignmentVector(GetNeighbours(10f)) * AligningWeight;
+        NewHeading += CohesionVector(GetNeighbours(20f)) * CohesionWeight;
         return NewHeading.normalized;
     }
 
@@ -107,9 +114,29 @@ public class BoidMovement : MonoBehaviour
         foreach (GameObject Boid in Neighbours)
         {
             AligningVector += Boid.transform.position;
+
         }
         AligningVector /= Neighbours.Count;
+
+
         return AligningVector.normalized;
+    }
+
+    Vector3 CohesionVector (List<GameObject> Neighbours)
+    {
+        if (Neighbours.Count == 0)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 AveragePosition = transform.position;
+
+        foreach (GameObject Boid in Neighbours)
+        {
+            AveragePosition += Boid.transform.position;
+        }
+        AveragePosition /= (Neighbours.Count + 1);
+        return (AveragePosition - transform.position).normalized;
     }
 
     void RespawnBoid()

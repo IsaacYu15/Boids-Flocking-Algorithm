@@ -9,6 +9,10 @@ public class SpawnBoids : MonoBehaviour
     public float SpawnNumber;
     public float Bounds = 20;
 
+    public float AvoidingWeight;
+    public float AligningWeight;
+    public float CohesionWeight;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -17,8 +21,16 @@ public class SpawnBoids : MonoBehaviour
             GameObject Boid = Instantiate(Boids,
                 new Vector3(Random.Range(-Bounds + 1, Bounds - 1), 0, Random.Range(-Bounds + 1, Bounds - 1)),
                 Quaternion.identity);
-            Boid.transform.GetComponent<BoidMovement>().Bounds = Bounds;
-            Boid.transform.GetComponent<BoidMovement>().BoidManager = this;
+
+            BoidMovement BoidMovement = Boid.transform.GetComponent<BoidMovement>();
+
+            BoidMovement.Bounds         = Bounds;
+            BoidMovement.BoidManager    = this;
+            BoidMovement.AligningWeight = this.AligningWeight;
+            BoidMovement.AvoidingWeight = this.AvoidingWeight;
+            BoidMovement.CohesionWeight = this.CohesionWeight;
+            BoidMovement.Speed          = Random.Range(3, 6);
+
             BoidsList.Add(Boid);
         }
     }
