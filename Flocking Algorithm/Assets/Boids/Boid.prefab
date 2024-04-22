@@ -195,6 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f96f98c7d92f693469d91139f73cb27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 6107003828012624128}
   BoidManager: {fileID: 0}
   BoundsLayer:
     serializedVersion: 2
@@ -209,3 +210,4 @@ MonoBehaviour:
   AvoidingWeight: 1
   AligningWeight: 1
   CohesionWeight: 1
+  TurningWeight: 0

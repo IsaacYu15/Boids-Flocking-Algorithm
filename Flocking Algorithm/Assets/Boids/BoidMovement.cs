@@ -18,12 +18,16 @@ public class BoidMovement : MonoBehaviour
     public float AvoidingWeight;
     public float AligningWeight;
     public float CohesionWeight;
-    public float TurningWeight;
+    public float BoundsWeight;
+
+    public float AvoidingDistance;
+    public float AligningDistance;
+    public float CohesionDistance;
 
     void Start()
     {
         //set random velocity
-        Heading = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f));
+        Heading = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f));
         Heading = Heading.normalized;
 
         //set random colour 
@@ -31,11 +35,11 @@ public class BoidMovement : MonoBehaviour
         renderer.color = colors[Random.Range(0, colors.Length)];
     }
 
-    Quaternion PrevRotation;
     // Update is called once per frame
     void Update()
     {
         Heading = CalculateNewHeading();
+
         Quaternion NewRotation = Quaternion.LookRotation(Heading);
         transform.rotation = Quaternion.Lerp(transform.rotation, NewRotation, Time.deltaTime * 5);
 
@@ -74,9 +78,17 @@ public class BoidMovement : MonoBehaviour
     Vector3 CalculateNewHeading()
     {
         Vector3 NewHeading = Vector3.zero;
-        NewHeading += AvoidingVector(GetNeighbours(5f))  * AvoidingWeight;
-        NewHeading += AlignmentVector(GetNeighbours(10f)) * AligningWeight;
-        NewHeading += CohesionVector(GetNeighbours(10f)) * CohesionWeight;
+        Vector3 Avoiding =  AvoidingVector(GetNeighbours(AvoidingDistance))  * AvoidingWeight;
+        Vector3 Aligning =  AlignmentVector(GetNeighbours(AligningDistance)) * AligningWeight;
+        Vector3 Cohesive = CohesionVector(GetNeighbours(CohesionDistance)) * CohesionWeight;
+        Vector3 Bounds = CalculateBoundsVector() * BoundsWeight;
+
+        NewHeading = NewHeading + Avoiding + Aligning + Cohesive + Bounds;
+
+        if (NewHeading == Vector3.zero)
+        {
+            return transform.forward;
+        }
 
         return NewHeading.normalized;
     }
@@ -133,6 +145,19 @@ public class BoidMovement : MonoBehaviour
         }
         AveragePosition /= (Neighbours.Count + 1);
         return (AveragePosition - transform.position).normalized;
+    }
+
+    Vector3 CalculateBoundsVector()
+    {
+        var offsetToCenter = BoidManager.transform.position - transform.position;
+        if (offsetToCenter.magnitude >= BoidManager.Bounds * 0.9f)
+        {
+            return offsetToCenter.normalized;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
     }
 
 
