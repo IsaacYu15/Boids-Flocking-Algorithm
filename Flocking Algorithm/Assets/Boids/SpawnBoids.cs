@@ -18,6 +18,9 @@ public class SpawnBoids : MonoBehaviour
     public float AligningDistance;
     public float CohesionDistance;
 
+    public float MinSpeed;
+    public float MaxSpeed;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,7 +43,7 @@ public class SpawnBoids : MonoBehaviour
             BoidMovement.AvoidingDistance = this.AvoidingDistance;
             BoidMovement.CohesionDistance = this.CohesionDistance;
 
-            BoidMovement.Speed          = Random.Range(3, 6);
+            BoidMovement.Speed          = Random.Range(MinSpeed, MaxSpeed);
 
             BoidsList.Add(Boid);
         }

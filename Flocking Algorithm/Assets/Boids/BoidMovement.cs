@@ -29,10 +29,6 @@ public class BoidMovement : MonoBehaviour
         //set random velocity
         Heading = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f));
         Heading = Heading.normalized;
-
-        //set random colour 
-        SpriteRenderer renderer = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
-        renderer.color = colors[Random.Range(0, colors.Length)];
     }
 
     // Update is called once per frame
