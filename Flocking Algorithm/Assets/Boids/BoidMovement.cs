@@ -5,10 +5,9 @@ using UnityEngine;
 public class BoidMovement : MonoBehaviour
 {
     public SpawnBoids BoidManager;
-    public LayerMask BoundsLayer;
 
     public float Bounds;
-    public float Speed = 0.5f;
+    public float Speed;
     Vector3 Heading;
 
     public float MaxFOV;
@@ -24,6 +23,18 @@ public class BoidMovement : MonoBehaviour
     public float AligningDistance;
     public float CohesionDistance;
 
+    struct FlockProperties
+    {
+        private Vector3 Vector { get; set; }
+        private int Count { get; set; }
+
+        public FlockProperties(Vector3 InVector, int InCount)
+        {
+            Vector = InVector;
+            Count = InCount;
+        }
+    }
+
     void Start()
     {
         //set random velocity
@@ -31,7 +42,6 @@ public class BoidMovement : MonoBehaviour
         Heading = Heading.normalized;
     }
 
-    // Update is called once per frame
     void Update()
     {
         Heading = CalculateNewHeading();
@@ -145,8 +155,8 @@ public class BoidMovement : MonoBehaviour
 
     Vector3 CalculateBoundsVector()
     {
-        var offsetToCenter = BoidManager.transform.position - transform.position;
-        if (offsetToCenter.magnitude >= BoidManager.Bounds * 0.9f)
+        Vector3 offsetToCenter = BoidManager.transform.position - transform.position;
+        if (offsetToCenter.magnitude >= BoidManager.Bounds * 0.75f)
         {
             return offsetToCenter.normalized;
         }

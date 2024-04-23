@@ -116,15 +116,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   Bounds: 0
-  Speed: 4
+  Speed: 0
   MaxFOV: 270
   colors:
   - {r: 0.40251565, g: 0.62204885, b: 1, a: 1}
   - {r: 0, g: 0.15640518, b: 0.4245283, a: 1}
   - {r: 0.0044498947, g: 0.26348576, b: 0.7075472, a: 1}
-  AvoidingWeight: 1
-  AligningWeight: 1
-  CohesionWeight: 1
+  AvoidingWeight: 0
+  AligningWeight: 0
+  CohesionWeight: 0
   BoundsWeight: 0
   AvoidingDistance: 0
   AligningDistance: 0

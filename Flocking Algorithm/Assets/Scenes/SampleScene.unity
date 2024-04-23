@@ -729,6 +729,8 @@ MonoBehaviour:
   AvoidingDistance: 3
   AligningDistance: 6
   CohesionDistance: 6
+  MinSpeed: 1
+  MaxSpeed: 3
 --- !u!4 &1678744589
 Transform:
   m_ObjectHideFlags: 0

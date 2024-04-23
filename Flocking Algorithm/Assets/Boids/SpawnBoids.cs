@@ -27,48 +27,37 @@ public class SpawnBoids : MonoBehaviour
         for (int i = 0; i < SpawnNumber; i ++)
         {
             GameObject Boid = Instantiate(Boids,
-                new Vector3(Random.Range(-Bounds + 1, Bounds - 1), Random.Range(-Bounds + 1, Bounds - 1), Random.Range(-Bounds + 1, Bounds - 1)),
-                Quaternion.identity);
+                              new Vector3(Random.Range(-Bounds + 1, Bounds - 1), 
+                                          Random.Range(-Bounds + 1, Bounds - 1), 
+                                          Random.Range(-Bounds + 1, Bounds - 1)
+                                          ),
+                              Quaternion.identity);
 
             BoidMovement BoidMovement = Boid.transform.GetComponent<BoidMovement>();
-
-            BoidMovement.Bounds         = Bounds;
-            BoidMovement.BoidManager    = this;
-            BoidMovement.AligningWeight = this.AligningWeight;
-            BoidMovement.AvoidingWeight = this.AvoidingWeight;
-            BoidMovement.CohesionWeight = this.CohesionWeight;
-            BoidMovement.BoundsWeight   = this.BoundsWeight;
-
-            BoidMovement.AligningDistance = this.AligningDistance;
-            BoidMovement.AvoidingDistance = this.AvoidingDistance;
-            BoidMovement.CohesionDistance = this.CohesionDistance;
-
-            BoidMovement.Speed          = Random.Range(MinSpeed, MaxSpeed);
+            UpdateBoids(BoidMovement);
 
             BoidsList.Add(Boid);
         }
     }
 
-    private void Update()
+    public void UpdateBoids(BoidMovement BoidMovement)
     {
-        UpdateBoids();
-    }
-
-    public void UpdateBoids()
-    {
-        foreach (GameObject Boid in BoidsList)
+        //allows for us to reuse the function
+        if (!BoidMovement.BoidManager)
         {
-            BoidMovement BoidMovement = Boid.transform.GetComponent<BoidMovement>();
-
-            BoidMovement.AligningWeight = this.AligningWeight;
-            BoidMovement.AvoidingWeight = this.AvoidingWeight;
-            BoidMovement.CohesionWeight = this.CohesionWeight;
-            BoidMovement.BoundsWeight   = this.BoundsWeight;
-
-            BoidMovement.AligningDistance = this.AligningDistance;
-            BoidMovement.AvoidingDistance = this.AvoidingDistance;
-            BoidMovement.CohesionDistance = this.CohesionDistance;
+            BoidMovement.BoidManager = this;
+            BoidMovement.Speed = Random.Range(MinSpeed, MaxSpeed);
         }
 
+        BoidMovement.Bounds = Bounds;
+
+        BoidMovement.AligningWeight = this.AligningWeight;
+        BoidMovement.AvoidingWeight = this.AvoidingWeight;
+        BoidMovement.CohesionWeight = this.CohesionWeight;
+        BoidMovement.BoundsWeight   = this.BoundsWeight;
+
+        BoidMovement.AligningDistance = this.AligningDistance;
+        BoidMovement.AvoidingDistance = this.AvoidingDistance;
+        BoidMovement.CohesionDistance = this.CohesionDistance;
     }
 }
