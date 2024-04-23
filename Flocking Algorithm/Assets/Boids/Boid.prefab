@@ -112,9 +112,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoidManager: {fileID: 0}
-  BoundsLayer:
+  BoidsLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
   Bounds: 0
   Speed: 0
   MaxFOV: 270
@@ -129,6 +129,7 @@ MonoBehaviour:
   AvoidingDistance: 0
   AligningDistance: 0
   CohesionDistance: 0
+  ObstacleDistance: 5
 --- !u!1001 &6270913043759285086
 PrefabInstance:
   m_ObjectHideFlags: 0

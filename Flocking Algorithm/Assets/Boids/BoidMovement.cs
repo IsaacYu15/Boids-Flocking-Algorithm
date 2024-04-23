@@ -5,6 +5,7 @@ using UnityEngine;
 public class BoidMovement : MonoBehaviour
 {
     public SpawnBoids BoidManager;
+    public LayerMask BoidsLayer;
 
     public float Bounds;
     public float Speed;
@@ -22,6 +23,8 @@ public class BoidMovement : MonoBehaviour
     public float AvoidingDistance;
     public float AligningDistance;
     public float CohesionDistance;
+
+    public float ObstacleDistance = 5f;
 
     struct FlockProperties
     {
@@ -43,18 +46,16 @@ public class BoidMovement : MonoBehaviour
 
     void Update()
     {
-        Heading = CalculateHeading();
-
+        Heading = ObstacleAvoidance(CalculateHeading());
+        
         Quaternion NewRotation = Quaternion.LookRotation(Heading);
         transform.rotation = Quaternion.Lerp(transform.rotation, NewRotation, Time.deltaTime * 5);
 
         transform.position += transform.forward * Speed * Time.deltaTime;
-
     }
 
     Vector3 CalculateHeading()
     {
-        //det avoiding, aligning and cohesion vectors, each with their own weights
         FlockProperties AvoidingProperty = new FlockProperties(transform.forward , 1);
         FlockProperties AligningProperty = new FlockProperties(transform.forward , 1);
         FlockProperties CohesionProperty = new FlockProperties(transform.position, 1);
@@ -112,7 +113,17 @@ public class BoidMovement : MonoBehaviour
         }
     }
 
+    Vector3 ObstacleAvoidance(Vector3 InHeading)
+    {
+        RaycastHit Hit;
 
+        if (Physics.Raycast(transform.position, InHeading, out Hit, ObstacleDistance, ~BoidsLayer))
+        {
+            return Vector3.Reflect(InHeading.normalized, Hit.normal);
+        }
+
+        return InHeading;
+    }
 
     /**DEPRECIATED BUT THE MATH HERE IS FOR SURE RIGHT **/
     List<GameObject> GetNeighbours(float DistanceWeight)
